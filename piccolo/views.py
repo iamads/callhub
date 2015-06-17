@@ -5,6 +5,7 @@ from shopify_app.decorators import shop_login_required
 from django.shortcuts import render, HttpResponse, redirect
 from django.views.decorators.csrf import csrf_exempt
 import json
+from piccolo.models import Buyers, Transactions, PreviousOrders
 
 list_of_products = [{"title": 'Coat', "price": '245'}, {"title": 'Blazer', "price": '500'},
                     {"title": 'Shirt', "price": '150'},
@@ -44,7 +45,25 @@ def payload(request):
         product_ids = []
         for i in data['line_items']:
             product_ids.append(i['product_id'])
-        print product_ids
+        # print product_ids
+        if PreviousOrders.objects.filter(order_id=order_id).exists():
+            pass
+        else:
+            new_order = PreviousOrders(order_id=order_id)
+            new_order.save()
+            if Buyers.objects.filter(buyer_id=customer_id).exists():
+                pass
+            else:
+                new_customer = Buyers(first_name=first_name, last_name=last_name, phone=phone, buyer_id=customer_id)
+                new_customer.save()
+            for product_id in product_ids:
+                if Transactions.objects.filter(buyer_id=customer_id, product_id=product_id).exists():
+                    old_transaction = Transactions(buyer_id=customer_id, product_id=product_id)
+                    old_transaction.count += 1
+                    old_transaction.save()
+                else:
+                    new_transaction = Transactions(buyer_id=customer_id, product_id=product_id, count=1)
+                    new_transaction.save()
 
 
 def prerequisites(request):
