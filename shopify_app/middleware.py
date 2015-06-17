@@ -2,8 +2,10 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 import shopify
 
+
 class ConfigurationError(StandardError):
     pass
+
 
 class LoginProtection(object):
     def __init__(self):

@@ -5,8 +5,10 @@ from django.template import RequestContext
 from django.conf import settings
 import shopify
 
+
 def _return_address(request):
     return request.session.get('return_to') or reverse('root_path')
+
 
 def login(request):
     # Ask user for their ${shop}.myshopify.com address
@@ -18,6 +20,7 @@ def login(request):
     return render_to_response('shopify_app/login.html', {},
                               context_instance=RequestContext(request))
 
+
 def authenticate(request):
     shop = request.REQUEST.get('shop')
     if shop:
@@ -27,6 +30,7 @@ def authenticate(request):
         return redirect(permission_url)
 
     return redirect(_return_address(request))
+
 
 def finalize(request):
     shop_url = request.REQUEST.get('shop')
@@ -46,6 +50,7 @@ def finalize(request):
     response = redirect(_return_address(request))
     request.session.pop('return_to', None)
     return response
+
 
 def logout(request):
     request.session.pop('shopify', None)

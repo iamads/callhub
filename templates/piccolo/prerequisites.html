@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h1> Prerequisites </h1>
+    <form id ="prerequisites" method="post" action="/prerequisites/">
+     {% csrf_token %}
+    <ul>
+        <li> Create a webhook on transactions topic. <input type="submit" name="webhook" value="Setup Webhook"></li>
+        <li> Load Product Data Set. <input type="submit" name="load_products" value="Load Products"></li>
+    </ul>
+    </form>
+{% endblock %}
