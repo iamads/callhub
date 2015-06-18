@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+{% if buyers %}
+    {% for buyer in buyers %}
+        name - {{ buyer.name }}<br/>
+        phone - {{ buyer.phone }}<br/>
+        count - {{ buyer.count }}<br /><br />
+    {% endfor %}
+{% else %}
+    No one bought this.
+{% endif %}
+{% endblock %}

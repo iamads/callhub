@@ -6,6 +6,7 @@ from django.shortcuts import render, HttpResponse, redirect
 from django.views.decorators.csrf import csrf_exempt
 import json
 from piccolo.models import Buyers, Transactions, PreviousOrders
+from django.db import connections
 
 list_of_products = [{"title": 'Coat', "price": '245'}, {"title": 'Blazer', "price": '500'},
                     {"title": 'Shirt', "price": '150'},
@@ -22,9 +23,28 @@ def welcome(request):
     }, context_instance=RequestContext(request))
 
 
+def theyboughtthis(request):
+    if request.method == 'GET':
+        product_id = request.GET.get('product_id')
+        buyer_list = []
+        for a in Transactions.objects.filter(product_id=product_id):
+            buyer = a.buyer_id
+            count = a.count
+            name = Buyers.objects.get(buyer_id=buyer).first_name + " " + Buyers.objects.get(
+                buyer_id=buyer).last_name
+            phone = Buyers.objects.get(buyer_id=buyer).phone
+            buyer_list.append({"name": name, "phone": phone, "count": count})
+        print buyer_list
+        if len(buyer_list) == 0:
+            d = {}
+        else:
+            d = {"buyers": buyer_list}
+        return render(request, "piccolo/theyboughtthis.html", d)
+
+
 @shop_login_required
 def index(request):
-    products = shopify.Product.find(limit=3)
+    products = shopify.Product.find()
     orders = shopify.Order.find(limit=3, order="created_at DESC")
     return render_to_response('piccolo/index.html', {
         'products': products,
@@ -89,3 +109,7 @@ def prerequisites(request):
         return redirect(prerequisites)
         # Call to load products
     return render(request, "piccolo/prerequisites.html", )
+
+
+def about(request):
+    return render(request, "piccolo/about.html", )
